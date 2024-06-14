@@ -63,10 +63,11 @@ def golden_phi(n: int) -> int:
 def sqrt5(n: int) -> int:
     return 2 * golden_phi(n) - 1
 
+
+#Rapel: ** power // divison entier
 def pow(a: float, n: int) -> float:
-    p = 0
-    res = 1
-    while (p < n) :
-        res *= a
-        p += 1
-    return res
+    if (n <= 0) :
+        return 1;
+    if (n % 2 == 0) :
+        return pow(a, n // 2) * pow(a, n // 2)
+    return pow(a, n // 2) * pow(a, n // 2) * a
