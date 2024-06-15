@@ -25,7 +25,7 @@ def facto_ite(n: int) -> int:
     if (n == 0) :
         return 1
     i = 0
-    res = n;
+    res = n
     while n > 1 :
         res *= (n - 1)
         n -= 1
