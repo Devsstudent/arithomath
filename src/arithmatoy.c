@@ -29,58 +29,78 @@ char *arithmatoy_add(unsigned int base, const char *lhs, const char *rhs) {
     fprintf(stderr, "add: entering function\n");
   }
   //Verifier la base check_base (all char must be in get_all digits)
+  lhs = drop_leading_zeros(lhs);
+  rhs = drop_leading_zeros(rhs);
   int size_lhs = strlen(lhs);
   int size_rhs = strlen(rhs);
   int min_size;
   int max_size;
+  char *rhs_rev = reverse(strdup((char *)rhs));
+  char *lhs_rev = reverse(strdup((char *)lhs));
+  char *max;
   
   if (size_lhs >= size_rhs) {
     max_size = size_lhs;
     min_size = size_rhs;
+	max = lhs_rev;
   } else {
     min_size = size_lhs;
     max_size = size_rhs;
+	max = rhs_rev;
   }
-  rhs = reverse(rhs);
-  lhs = reverse(lhs);
-  char *res = malloc(sizeof(char) * max_size + 2);
+  char *res = calloc(sizeof(char), max_size + 2);
 
-  //i rpz l'index
   int i = 0;
   int retenu = 0;
   while (i < min_size) {
-    int val1 = get_value(base, lhs[i]);
-    int val2 = get_value(base, rhs[i]);
+    int val1 = get_value(base, lhs_rev[i]);
+    int val2 = get_value(base, rhs_rev[i]);
     if (val1 < 0 || val2 < 0) {
       return 0;
     }
     if (val1 + val2 + retenu >= base) {
-      int current_val = base - (val1 + val2);
+      int current_val = (val1 + val2 + retenu) - base;
       res[i] = get_all_digits()[current_val];
       retenu = 1;
-      //sinon on doit retenir 1 et ajouter a res value - (base)
     } else {
+      res[i] = get_all_digits()[val1 + val2 + retenu];
       if (retenu == 1) {
         retenu = 0;
       }
-      res[i] = get_all_digits()[val1 + val2 + retenu];
     }
-    printf("%i, min %i, max%i \n", i, min_size, max_size);
-    //get la value a cette idx
     i++;
   }
   while (i < max_size) {
-    res[i] = 
+    int val1 = get_value(base, max[i]);
+    if (val1 < 0)
+      return 0;
+    if (val1 + retenu >= base) {
+      int current_val = (val1 + retenu) - base;
+      res[i] = get_all_digits()[current_val];
+      retenu = 1;
+	} else {
+    	res[i] = max[i] + retenu;
+		if (retenu == 1) {
+			retenu = 0;
+		}
+	}
+	i++;
   }
-  res[i] = 0;
+  if (retenu == 1) {
+	res[i] = '1';
+	i++;
+  }
   res = reverse(res);
+  res[i] = 0;
   return (res);
-
-
-  // Fill the function, the goal is to compute lhs + rhs
-  // You should allocate a new char* large enough to store the result as a
-  // string Implement the algorithm Return the result
 }
+
+/*
+int main(void) {
+	printf("test 0xa2 + 0xa\n%s\n", arithmatoy_add(16, "a2", "a"));
+	printf("test 0xfff + 0x1234\n%s\n", arithmatoy_add(16, "fff", "1234"));
+	printf("test 0x123 + 0x1234\n%s\n", arithmatoy_add(16, "123", "1234"));
+}*/
 
 char *arithmatoy_sub(unsigned int base, const char *lhs, const char *rhs) {
   if (VERBOSE) {
@@ -159,3 +179,4 @@ void debug_abort(const char *debug_msg) {
   fprintf(stderr, debug_msg);
   exit(EXIT_FAILURE);
 }
+
