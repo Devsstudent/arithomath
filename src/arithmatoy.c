@@ -141,14 +141,14 @@ char *arithmatoy_mul(unsigned int base, const char *lhs, const char *rhs) {
 			if (calc >= base) {
 				add_arr[i][i + j] = get_all_digits()[calc % base];
 				retenu = calc / base;
-				printf("%i %i, %i %i\n", retenu, calc / base, calc, base);
+//				printf("%i %i, %i %i\n", retenu, calc / base, calc, base);
 			} else {
 				add_arr[i][i + j] = get_all_digits()[calc % base];
 				retenu = 0;
 			}
 			j++;
 		}
-		printf("retenu %i\n", retenu);
+//		printf("retenu %i\n", retenu);
 		if (retenu != 0) {
 			add_arr[i][i + j] = get_all_digits()[retenu];
 			retenu = 0;
@@ -167,18 +167,18 @@ char *arithmatoy_mul(unsigned int base, const char *lhs, const char *rhs) {
 		arg1 = reverse(strdup(add_arr[i + 1]));
 	}
 	char *ress = arithmatoy_add(base, arg0, arg1);
-	printf("ici %s %s %s\n", ress, arg0, arg1);
+//	printf("ici %s %s %s\n", ress, arg0, arg1);
 	if (!ress) {
 		return (reverse(strdup(add_arr[0])));
 	}
-	printf("%s\n", add_arr[i]);
+//	printf("%s\n", add_arr[i]);
 	i += 2;
 	if (i >= size) {
 		return (ress);
 	}
 	while (i < size) {
 		char *buf = ress;
-		printf("addr de i %s\n", add_arr[i]);
+//		printf("addr de i %s\n", add_arr[i]);
 		arg0 = ress;
 		if (add_arr[i]) {
 			arg1 = reverse(strdup(add_arr[i]));
@@ -186,9 +186,9 @@ char *arithmatoy_mul(unsigned int base, const char *lhs, const char *rhs) {
 		else {
 			arg1 = NULL;
 		}
-		printf("bruh arg 1 %s arg 2 %s\n", arg0, arg1);
+	//	printf("bruh arg 1 %s arg 2 %s\n", arg0, arg1);
 		ress = arithmatoy_add(base, arg0, arg1);
-		printf("bruh2 %s\n", ress);
+	//	printf("bruh2 %s\n", ress);
 		if (i + 1 >= size) {
 			return (ress);
 		}
@@ -198,13 +198,22 @@ char *arithmatoy_mul(unsigned int base, const char *lhs, const char *rhs) {
 	printf("res %s\n", res);
 	//add all
 }
-
+/*
 int main(void) {
+	printf("test 0 * 0 %s\n", arithmatoy_mul(16, "0", "0"));
+	printf("test 1 * 0 %s\n", arithmatoy_mul(16, "1", "0"));
+	printf("test 0 * 1 %s\n", arithmatoy_mul(16, "1", "0"));
 	printf("test 0xa2 * 0xa %s\n", arithmatoy_mul(16, "a2", "a"));
 	printf("test 0xa2 * 0xaaa %s\n", arithmatoy_mul(16, "a2", "aaa"));
 	printf("test 0xaaa * 0xa2 %s\n", arithmatoy_mul(16, "aaa", "a2"));
+	printf("test 100111 * 00000100 %s\n", arithmatoy_mul(2, "100111", "00000100"));
+	printf("test 184 * 15 %s\n", arithmatoy_mul(10, "184", "15"));
+	printf("test 5abff901 * 4 %s\n", arithmatoy_mul(16, "5abff901", "4"));
+	printf("test 5abff901 * b4 %s\n", arithmatoy_mul(16, "5abff901", "b4"));
+	printf("test 5abff901 * 7cb4 %s\n", arithmatoy_mul(16, "5abff901", "7cb4"));
+
 	//printf("test 0x123 * 0x1234\n%s\n", arithmatoy_mul(16, "123", "1234"));
-}
+}*/
 // Here are some utility functions that might be helpful to implement add, sub
 // and mul:
 
