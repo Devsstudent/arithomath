@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "utils.h"
 
@@ -28,6 +29,9 @@ char *arithmatoy_add(unsigned int base, const char *lhs, const char *rhs) {
   if (VERBOSE) {
     fprintf(stderr, "add: entering function\n");
   }
+	if (!lhs || !rhs) {
+		return 0;
+	}
   //Verifier la base check_base (all char must be in get_all digits)
   lhs = drop_leading_zeros(lhs);
   rhs = drop_leading_zeros(rhs);
@@ -95,12 +99,6 @@ char *arithmatoy_add(unsigned int base, const char *lhs, const char *rhs) {
   return (res);
 }
 
-/*
-int main(void) {
-	printf("test 0xa2 + 0xa\n%s\n", arithmatoy_add(16, "a2", "a"));
-	printf("test 0xfff + 0x1234\n%s\n", arithmatoy_add(16, "fff", "1234"));
-	printf("test 0x123 + 0x1234\n%s\n", arithmatoy_add(16, "123", "1234"));
-}*/
 
 char *arithmatoy_sub(unsigned int base, const char *lhs, const char *rhs) {
   if (VERBOSE) {
@@ -117,11 +115,96 @@ char *arithmatoy_mul(unsigned int base, const char *lhs, const char *rhs) {
     fprintf(stderr, "mul: entering function\n");
   }
 
-  // Fill the function, the goal is to compute lhs * rhs
-  // You should allocate a new char* large enough to store the result as a
-  // string Implement the algorithm Return the result
+	char *rev_lhs = reverse(strdup((char*)lhs));
+	char *rev_rhs = reverse(strdup((char*)rhs));
+	char **add_arr = calloc(sizeof(char*), (strlen(rhs) + 1));
+	char *res = calloc(sizeof(char), 100);
+	int i = 0;
+//	printf("%s %s %i %i\n", rev_lhs, rev_rhs, strlen(rhs), strlen(lhs));
+	while (i < strlen(rhs)) {
+		//get value de current pos
+//		printf("%s %s %i %i\n", rev_lhs, rev_rhs, strlen(rhs), strlen(lhs));
+		int val_r = get_value(base, rev_rhs[i]);
+		add_arr[i] = calloc(sizeof(char), 100);
+		int retenu = 0;
+		int j = 0;
+		//i represente le decalage
+		while (j < strlen(lhs)) {
+			int k = 0;
+			while (k < i) {
+				add_arr[i][k] = '0';
+				k++;
+			}
+			int val_l = get_value(base, rev_lhs[j]);
+			int calc = val_l * val_r + retenu;
+		//	printf("%i %i\n", val_l, val_r);
+			if (calc >= base) {
+				add_arr[i][i + j] = get_all_digits()[calc % base];
+				retenu = calc / base;
+				printf("%i %i, %i %i\n", retenu, calc / base, calc, base);
+			} else {
+				add_arr[i][i + j] = get_all_digits()[calc % base];
+				retenu = 0;
+			}
+			j++;
+		}
+		printf("retenu %i\n", retenu);
+		if (retenu != 0) {
+			add_arr[i][i + j] = get_all_digits()[retenu];
+			retenu = 0;
+		}
+		i++;
+	}
+	int size = i;
+	add_arr[i] = 0;
+	i = 0;
+	char *arg0;
+	char *arg1;
+	if (add_arr[i]) {
+		arg0 =  reverse(strdup(add_arr[i]));
+	}
+	if (add_arr[i + 1]) {
+		arg1 = reverse(strdup(add_arr[i + 1]));
+	}
+	char *ress = arithmatoy_add(base, arg0, arg1);
+	printf("ici %s %s %s\n", ress, arg0, arg1);
+	if (!ress) {
+		return (reverse(strdup(add_arr[0])));
+	}
+	printf("%s\n", add_arr[i]);
+	i += 2;
+	if (i >= size) {
+		return (ress);
+	}
+	while (i < size) {
+		char *buf = ress;
+		printf("addr de i %s\n", add_arr[i]);
+		arg0 = ress;
+		if (add_arr[i]) {
+			arg1 = reverse(strdup(add_arr[i]));
+		}
+		else {
+			arg1 = NULL;
+		}
+		printf("bruh arg 1 %s arg 2 %s\n", arg0, arg1);
+		ress = arithmatoy_add(base, arg0, arg1);
+		printf("bruh2 %s\n", ress);
+		if (i + 1 >= size) {
+			return (ress);
+		}
+		i++;
+	}
+	return (reverse(strdup(add_arr[0])));
+	printf("res %s\n", res);
+	//add all
 }
 
+int main(void) {
+	printf("test 0xa2 * 0xa %s\n", arithmatoy_mul(16, "a2", "a"));
+	printf("test 0xa2 * 0xaaa %s\n", arithmatoy_mul(16, "a2", "aaa"));
+	printf("test 0xaaa * 0xa2 %s\n", arithmatoy_mul(16, "aaa", "a2"));
+	//printf("test 0x123 * 0x1234\n%s\n", arithmatoy_mul(16, "123", "1234"));
+}
 // Here are some utility functions that might be helpful to implement add, sub
 // and mul:
 
