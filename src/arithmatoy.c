@@ -212,16 +212,13 @@ char *arithmatoy_sub(unsigned int base, const char *lhs, const char *rhs) {
   return (res);
 }
 /*
+char *arithmatoy_mul(unsigned int base, const char *lhs, const char *rhs);
 int main(void) {
 	//printf("test 0xa2 + 0xa\n%s\n", arithmatoy_add(16, "a2", "a"));
 	//printf("test 0xfff + 0x1234\n%s\n", arithmatoy_add(16, "fff", "1234"));
 	//printf("test 0x123 + 0x1234\n%s\n", arithmatoy_add(16, "123", "1234"));
-	printf("test 0xffff - 0xfdcb\n%s\n", arithmatoy_sub(16, "ffff", "fdcb"));
-	printf("test 0xa2 - 0xa\n%s\n", arithmatoy_sub(16, "a2", "a"));
-	printf("test 0xfff - 0x1234\n%s\n", arithmatoy_sub(16, "fff", "1234"));
-	printf("test 100111 - 100\n%s\n", arithmatoy_sub(2, "100111", "100"));
-	printf("test 9999999999 - 2042641502\n%s\n", arithmatoy_sub(10, "9999999999", "2042641502"));
-	printf("test 1804289383 - 846930886\n%s\n", arithmatoy_sub(10, "2018373832", "33165457"));
+	printf("test 0xffff - 0xfdcb\n%s\n", arithmatoy_mul(10, "8", "3"));
+	printf("test 0xffff - 0xfdcb\n%s\n", arithmatoy_mul(16, "5abff901", "b4"));
 }*/
 
 char *arithmatoy_mul(unsigned int base, const char *lhs, const char *rhs) {
@@ -229,18 +226,29 @@ char *arithmatoy_mul(unsigned int base, const char *lhs, const char *rhs) {
     fprintf(stderr, "mul: entering function\n");
   }
 
+	printf("test a%s b%s\n", lhs, rhs);
+	if (!rhs || !lhs){
+		return NULL;
+	}
+	if (!rhs[0] || !lhs[0]) {
+		return (NULL);
+	}
 	char *rev_lhs = reverse(strdup((char*)lhs));
 	char *rev_rhs = reverse(strdup((char*)rhs));
 	char **add_arr = calloc(sizeof(char*), (strlen(rhs) + 1));
 	char *res = calloc(sizeof(char), 100);
 	int i = 0;
-//	printf("%s %s %i %i\n", rev_lhs, rev_rhs, strlen(rhs), strlen(lhs));
+//	printf("test a%s b%s c%i d%i\n", lhs, rhs, strlen(rhs), strlen(lhs));
 	while (i < strlen(rhs)) {
 		//get value de current pos
 //		printf("%s %s %i %i\n", rev_lhs, rev_rhs, strlen(rhs), strlen(lhs));
 		int val_r = get_value(base, rev_rhs[i]);
+		if (val_r < 0) {
+			printf("%c\n", rev_rhs[i]);
+			return NULL;
+		}
 		add_arr[i] = calloc(sizeof(char), 100);
-		int retenu = 0;
+		long long int retenu = 0;
 		int j = 0;
 		//i represente le decalage
 		while (j < strlen(lhs)) {
@@ -250,19 +258,21 @@ char *arithmatoy_mul(unsigned int base, const char *lhs, const char *rhs) {
 				k++;
 			}
 			int val_l = get_value(base, rev_lhs[j]);
-			int calc = val_l * val_r + retenu;
-		//	printf("%i %i\n", val_l, val_r);
+			if (val_l < 0) {
+				printf("%c\n", rev_lhs[j]);
+				return NULL;
+			}
+			long long int calc = val_l * val_r + retenu;
 			if (calc >= base) {
 				add_arr[i][i + j] = get_all_digits()[calc % base];
 				retenu = calc / base;
-//				printf("%i %i, %i %i\n", retenu, calc / base, calc, base);
 			} else {
 				add_arr[i][i + j] = get_all_digits()[calc % base];
 				retenu = 0;
 			}
 			j++;
 		}
-//		printf("retenu %i\n", retenu);
+		printf("retenu %i %i %i %i %s\n", retenu, i, j, strlen(lhs), add_arr[i]);
 		if (retenu != 0) {
 			add_arr[i][i + j] = get_all_digits()[retenu];
 			retenu = 0;
@@ -272,13 +282,16 @@ char *arithmatoy_mul(unsigned int base, const char *lhs, const char *rhs) {
 	int size = i;
 	add_arr[i] = 0;
 	i = 0;
-	char *arg0;
-	char *arg1;
+	char *arg0 = NULL;
+	char *arg1 = NULL;
 	if (add_arr[i]) {
 		arg0 =  reverse(strdup(add_arr[i]));
 	}
-	if (add_arr[i + 1]) {
+	if (add_arr[i + 1] != NULL) {
 		arg1 = reverse(strdup(add_arr[i + 1]));
+	}
+	if (!arg1) {
+		return (reverse(strdup(add_arr[0])));
 	}
 	char *ress = arithmatoy_add(base, arg0, arg1);
 //	printf("ici %s %s %s\n", ress, arg0, arg1);
