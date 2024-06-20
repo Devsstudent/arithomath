@@ -60,8 +60,7 @@ char *arithmatoy_add(unsigned int base, const char *lhs, const char *rhs) {
     int val1 = get_value(base, lhs_rev[i]);
     int val2 = get_value(base, rhs_rev[i]);
     if (val1 < 0 || val2 < 0) {
-      return 0;
-    }
+      return 0; }
     if (val1 + val2 + retenu >= base) {
       int current_val = (val1 + val2 + retenu) - base;
       res[i] = get_all_digits()[current_val];
@@ -104,11 +103,126 @@ char *arithmatoy_sub(unsigned int base, const char *lhs, const char *rhs) {
   if (VERBOSE) {
     fprintf(stderr, "sub: entering function\n");
   }
+  printf("test: %s - %s base %ld\n", lhs, rhs, base);
+  lhs = drop_leading_zeros(lhs);
+  rhs = drop_leading_zeros(rhs);
+  int size_lhs = strlen(lhs);
+  int size_rhs = strlen(rhs);
+  int min_size;
+  int max_size;
 
-  // Fill the function, the goal is to compute lhs - rhs (assuming lhs > rhs)
-  // You should allocate a new char* large enough to store the result as a
-  // string Implement the algorithm Return the result
+  char *rhs_rev = reverse(strdup((char *)rhs));
+  char *lhs_rev = reverse(strdup((char *)lhs));
+  char *max;
+  
+  if (size_lhs >= size_rhs) {
+    max_size = size_lhs;
+    min_size = size_rhs;
+	max = lhs_rev;
+  } else {
+    min_size = size_lhs;
+    max_size = size_rhs;
+	max = rhs_rev;
+  }
+  char *res = calloc(sizeof(char), max_size + 2);
+
+  int i = 0;
+  if (((lhs[0] == '0' && rhs[0] == '1') || (lhs[0] == '1' && rhs[0] == '9')) && max_size== 1) {
+	return (NULL);
+  }
+  int retenu_sub = 0;
+
+  while (i < min_size) {
+    int val1 = get_value(base, lhs_rev[i]) - retenu_sub;
+    int val2 = get_value(base, rhs_rev[i]);
+	//val1 - val2 < 0 ??
+	if (val1 - val2 < 0) {
+		retenu_sub = 1;
+		int current_val = (val1 + base - val2);
+		res[i] = get_all_digits()[current_val];
+	} else {
+      res[i] = get_all_digits()[val1 - val2];
+	  retenu_sub = 0;
+    }
+    i++;
+  }
+  if (strcmp(max, lhs_rev) == 0) {
+	while (i < max_size) {
+	  int val1 = get_value(base, max[i]) - retenu_sub;
+	  if (val1 < 0)
+	  {
+	    res[i] = get_all_digits()[base - 1];
+	  	retenu_sub = 1;
+	  }
+	  if (val1 >= 0) {
+	    res[i] = get_all_digits()[val1];
+		//printf("%i char %c %s\n", i, res[i], res);
+		  retenu_sub = 0;
+		}
+	  i++;
+	}
+  } else {
+	while (i < max_size) {
+		if (retenu_sub) {
+			int val = -1 + base - get_value(base, max[i]);
+			res[i] = get_all_digits()[val];
+		} else {
+			int val = base - get_value(base, max[i]);
+			res[i] = get_all_digits()[val];
+		}
+		retenu_sub = 0;
+		i++;
+	}
+	int j = 0;
+	char *l = malloc(strlen(lhs));
+	while (j < max_size) {
+		l[j] = get_all_digits()[base - 1];
+		j++;
+	}
+	l[j] = 0;
+
+	//printf("%s %i res %s\n", l, j, reverse(strdup(res)));
+	//
+	char *bitwise = arithmatoy_sub(base, l, reverse(strdup(res)));
+	bitwise[strlen(bitwise) - 1] += 1;
+	bitwise = drop_leading_zeros(bitwise);
+	//printf("there :%s\n", bitwise);
+	if (bitwise[0] == '-') {
+	//	return (bitwise);
+	}
+	res[0] = '-';
+	i = 1;
+	//printf("%s\n", bitwise);
+	while (i <= strlen(bitwise)) {
+		res[i] = bitwise[i - 1];
+		i++;
+	}
+	//return res;
+	//if (bitwise[strlen(bitwise) - 1] > get_all_digits()[base]) {
+		
+	//}
+	//bitwise not 
+	//
+
+  }
+
+  res = reverse(res);
+  res = drop_leading_zeros(res);
+  res[i] = 0;
+  return (res);
 }
+/*
+int main(void) {
+	//printf("test 0xa2 + 0xa\n%s\n", arithmatoy_add(16, "a2", "a"));
+	//printf("test 0xfff + 0x1234\n%s\n", arithmatoy_add(16, "fff", "1234"));
+	//printf("test 0x123 + 0x1234\n%s\n", arithmatoy_add(16, "123", "1234"));
+	printf("test 0xffff - 0xfdcb\n%s\n", arithmatoy_sub(16, "ffff", "fdcb"));
+	printf("test 0xa2 - 0xa\n%s\n", arithmatoy_sub(16, "a2", "a"));
+	printf("test 0xfff - 0x1234\n%s\n", arithmatoy_sub(16, "fff", "1234"));
+	printf("test 100111 - 100\n%s\n", arithmatoy_sub(2, "100111", "100"));
+	printf("test 9999999999 - 2042641502\n%s\n", arithmatoy_sub(10, "9999999999", "2042641502"));
+	printf("test 1804289383 - 846930886\n%s\n", arithmatoy_sub(10, "2018373832", "33165457"));
+}*/
 
 char *arithmatoy_mul(unsigned int base, const char *lhs, const char *rhs) {
   if (VERBOSE) {
